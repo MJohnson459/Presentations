@@ -8,7 +8,7 @@ fn main() {
 
 ---
 
-## Agenda!
+## Agenda
 
 - What is rust?
 - Why is rust interesting?
@@ -37,7 +37,7 @@ fn main() {
 
 ---
 
-## Quick overview
+## Semantics overview
 
 
 
@@ -62,7 +62,9 @@ impl Point {
 }
 ```
 
-Note: no trailing ;
+Note:
+no trailing `;`
+explicit casting
 
 
 
@@ -95,9 +97,10 @@ enum Methods {
 }
 ```
 
----
 
-## Why is rust interesting
+Note:
+Not tied to base type
+Can wrap a type
 
 
 
@@ -112,24 +115,8 @@ let size = match number {
   8...20 => "medium",
   _ => "large"
 };
-```
 
-
-
-### ...to rival Erlang
-```rust
-let pair = (4, 5);
-
-match pair {
-  (0, 0) => println!("Origin"),
-  (0, y) => println!("Y-axis, coordinate {}", y),
-  (x, 0) => println!("X-axis, coordinate {}", x),
-  (x, y) => {
-    let distance = ((x*x + y*y) as f32).sqrt();
-    println!("({}, {}), and {} units from origin", x, y, distance);
-  }
-};
-
+println!("size = {}", size); // "size = small"
 ```
 
 
@@ -172,13 +159,53 @@ fn main() {
 }
 ```
 
+---
+
+## Why is Rust interesting?
+
+
+
+### Tooling
+
+- Cargo: a well integrated package manager
+- rustup: a simple tool for choosing which compiler to use
+
+
+
+### Cargo
+
+```toml
+[package]
+name = "marvin"
+version = "0.1.0"
+authors = ["Michael Johnson <mjohnson459@gmail.com>"]
+
+[features]
+logging = []
+
+[dependencies]
+chrono = { version="", features = ["serde"] }
+diesel = { version = "1.1", features = ["postgres", "serde_json", "chrono"] }
+diesel_full_text_search = "1.0"
+serde = "1.0"
+rocket = "0.3.6"
+r2d2 = "0.8"
+
+[build-dependencies]
+diesel_migrations = { version = "1.1", features = ["postgres"] }
+```
+
+Note:
+feature tags allow compile time branching (i.e. selective compilation).
+All versions must be sematically versioned major.minor.patch
+
 
 
 ### Iterators
 
 ```rust
 let numbers = vec![1, 2, 3, 4, 5];
-for x in &numbers {
+for x in numbers.iter() {
   println!("x = {}", x);
 }
 ```
@@ -189,24 +216,6 @@ x = 2
 x = 3
 x = 4
 x = 5
-```
-
-
-
-### Functional style
-```rust
-let numbers = vec![1, 2, 3, 4, 5];
-numbers.iter().enumerate().for_each(|(i, x)| {
-    println!("numbers[{}] = {}", i, x);
-});
-```
-
-```
-numbers[0] = 1
-numbers[1] = 2
-numbers[2] = 3
-numbers[3] = 4
-numbers[4] = 5
 ```
 
 
