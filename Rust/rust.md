@@ -168,7 +168,7 @@ fn main() {
 ### Tooling
 
 - Cargo: a well integrated package manager
-- rustup: a simple tool for choosing which compiler to use
+- rustup: a tool for managing the release channel for the `rustc` compiler
 
 
 
@@ -220,35 +220,26 @@ x = 5
 
 
 
-### Parallel with ease
+### Parallel iterators with rayon
 
 ```rust
+use rayon::prelude::*;
+
 let numbers = vec![1, 2, 3, 4, 5];
 numbers.par_iter().for_each(|x| {
     println!("x = {}", x);
 });
 ```
 
----
-
-## Libraries
-
-What already exists?
 
 
-
-- Lots of web type tools
-  - Rocket: generic web framework and routing tools
-  - serde: Generic **ser**ialisation and **de**serialisation library
-  - diesel: Powerful ORM for databases (integrates well with the two above)
-- Countless other small libraries. Some are amazingly well documented and maintained. Most are small abandonded projects by people learning Rust.
-
-
-### Rocket
+### Macros in Rocket
 
 A simple routing/web framework that can create REST API's.
 
 ```rust
+use rocket::*;
+
 #[get("/hello/<name>/<age>")]
 fn hello(name: String, age: u8) -> String {
     format!("Hello, {} year old named {}!", age, name)
@@ -263,7 +254,7 @@ fn main() {
 
 
 
-### serde
+### Macros in serde
 
 ```rust
 extern crate serde;
@@ -293,6 +284,12 @@ fn main() {
 }
 ```
 
+
+
+### Compiler errors
+
+Live demonstration time!
+
 ---
 
 ## Should you use rust?
@@ -301,10 +298,36 @@ fn main() {
 
 # Duh
 
+
+
+### Seriously though
+
+Do you...
+- get annoyed at the pace of change with C++?
+- disagree that learning a language means remembering all of the quirky ways it tries to break your code?
+- like C++ but really want a good package manager?
+- like dynamic languages but wish they ran faster and had less bugs?
+
+
+
+### Cons
+
+- When you start using macros, the error messages can look like the C++ template mess
+- If you haven't encounted functional programming before you might find it frustrating to learn Rust
+- Writing C++/Java code in Rust just doesn't work properly
+- While there are a ton of libraries out there, they are in varying degrees of completion
+
+
+### Pros
+
+- There are a ton of libraries out there, waiting to be completed by adventuring programmers!
+- Excellent tooling makes getting started relatively painless
+- Documentation is fantastic
+- Syntax should be fairly familiar to most people being a mix of C style conventions and functional
+- Immutable by default and variable lifetime management "force" you to write better code
+  - There are numerous lessons that will make your code better in any language
+
+
 ---
 
-## Summary
-
----
-
-## Questions
+# Questions
