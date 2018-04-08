@@ -203,6 +203,7 @@ fn main() {
 Note:
 - Used as a return when the function might not produce a valid value
 - Completely removes the need for `Null` type
+- Option is generic "templated" on the Some(T) type
 
 
 
@@ -274,6 +275,7 @@ Note:
 - feature tags allow compile time branching (i.e. selective compilation).
 - all dependencies must be sematically versioned major.minor.patch
 - can push to cargo.io central crate repo (or set up a local repository)
+
 
 
 ### Parallel iterators with Rayon
