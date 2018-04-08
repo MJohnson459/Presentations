@@ -412,3 +412,10 @@ Do you...
 
 # Questions
 
+---
+
+# Links
+
+- https://doc.rust-lang.org/book/second-edition/
+- https://doc.rust-lang.org/rust-by-example/
+- https://doc.rust-lang.org/reference/
