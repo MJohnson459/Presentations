@@ -2,7 +2,7 @@
 
 ```rust
 fn main() {
-  println!("Hello, SeeByte!");
+  println!("Welcome!");
 }
 ```
 
@@ -35,9 +35,35 @@ fn main() {
 - minimal runtime
 - efficient C bindings
 
+Note:
+Systems level programming language
+Similar to C++ with modern functional features added
+
+How easy can you make correct code while making it very hard to write incorrect code
+
+
 ---
 
 ## Semantics overview
+
+Note:
+A quick run through of what it looks like
+
+
+
+### Variables
+
+```rust
+let x: i32 = 5;
+let mut y = 5.6;
+let z = &y;
+```
+
+Note:
+- Strongly typed language but will try to deduce types (auto, var, etc)
+- Can manually specify the type for more clarity. Be a good programmer and make it readable!
+- immutable by default!
+- references but lifetimes are tracked "borrow"
 
 
 
@@ -45,10 +71,14 @@ fn main() {
 
 ```rust
 struct Point {
-  x: u32,
-  y: u32,
+  x: i32,
+  y: i32,
 }
 ```
+
+Note:
+- No classes, only structs.
+- Structs are basically the data portion of a class (POD)
 
 
 
@@ -63,8 +93,11 @@ impl Point {
 ```
 
 Note:
-no trailing `;`
-explicit casting
+- Implement functions for structs.
+- No default functions. None. No constructors etc.
+- Return is done by not having a trailing `;`
+  - Takes some getting used to but is a good way to highlight bad code
+- (optional) explicit casting
 
 
 
@@ -74,15 +107,37 @@ explicit casting
 trait Coordinate {
   fn distance(self&) -> f32;
 }
-```
 
-```rust
 impl Coordinate for Point {
   fn distance(self&) -> f32 {
     self.distance()
   }
 }
 ```
+
+Note:
+- traits allow you to define interfaces
+- there are traits for common operations such as Add, Subtract, Debug, etc
+
+
+
+### Macros
+
+```rust
+#[derive(Debug)]
+struct Point {
+  x: i32,
+  y: i32,
+}
+
+let p = Point{x: 4, y: 2};
+println!("Point = {:?}", p);
+// prints "Point = Point { x: 4, y: 2 }"
+```
+
+Note:
+- Automatically implements the Debug trait for the struct
+- Good libraries commonly supply macros to make the API cleaner
 
 
 
@@ -97,10 +152,9 @@ enum Methods {
 }
 ```
 
-
 Note:
-Not tied to base type
-Can wrap a type
+- Not tied to native type similar to C++11 `enum class`
+- Can wrap a type (will come back to later with Options and Results)
 
 
 
@@ -119,9 +173,14 @@ let size = match number {
 println!("size = {}", size); // "size = small"
 ```
 
+Note:
+- Can match against patterns
+- Must be exhaustive. Can't just ignore values.
+- Can "destructure" structs and types
 
 
-### Option and Result enums
+
+### Option enum
 
 ```rust
 fn divide(numerator: f64, denominator: f64) -> Option<f64> {
@@ -132,32 +191,44 @@ fn divide(numerator: f64, denominator: f64) -> Option<f64> {
   }
 }
 
+fn main() {
+  match divide(1.1, 4.5) {
+    Some(x) => println!("x = {}", x),
+    None => println!("Unable to divide"),
+  }
+}
+
+```
+
+Note:
+- Used as a return when the function might not produce a valid value
+- Completely removes the need for `Null` type
+
+
+
+### Result enum
+
+```rust
 fn double_number(number_str: &str) -> Result<i32, ParseIntError> {
   match number_str.parse::<i32>() {
     Ok(n) => Ok(2 * n),
     Err(err) => Err(err),
   }
 }
-```
 
-
-
-### Option and Result enums
-
-```rust
 fn main() {
-
-  match divide(1.1, 4.5) {
-    Some(x) => println!("x = {}", x),
-    None => println!("Unable to divide"),
-  }
-
   match double_number("10") {
     Ok(n) => assert_eq!(n, 20),
     Err(err) => println!("Error: {:?}", err),
   }
 }
 ```
+
+Note:
+- Like `Option` but returns an error if a value can't be produced
+- Main method of propogating errors
+- ? operators to make them less verbose when needed
+
 
 ---
 
@@ -169,6 +240,7 @@ fn main() {
 
 - Cargo: a well integrated package manager
 - rustup: a tool for managing the release channel for the `rustc` compiler
+- rustc: the compiler. amazing errors. the best errors.
 
 
 
@@ -196,49 +268,48 @@ diesel_migrations = { version = "1.1", features = ["postgres"] }
 ```
 
 Note:
-feature tags allow compile time branching (i.e. selective compilation).
-All versions must be sematically versioned major.minor.patch
+- toml file is a standardised version of .ini file
+- dependencies are downloaded and managed by cargo
+- all dependencies are compiled on your system!
+- feature tags allow compile time branching (i.e. selective compilation).
+- all dependencies must be sematically versioned major.minor.patch
+- can push to cargo.io central crate repo (or set up a local repository)
 
 
-
-### Iterators
+### Parallel iterators with Rayon
 
 ```rust
 let numbers = vec![1, 2, 3, 4, 5];
+
+// procedural style
 for x in numbers.iter() {
   println!("x = {}", x);
 }
-```
 
-```
-x = 1
-x = 2
-x = 3
-x = 4
-x = 5
-```
+// functional style
+numbers.iter().for_each(|x| println!("x = {}", x));
 
-
-
-### Parallel iterators with rayon
-
-```rust
+// parallel for loop
+extern crate rayon;
 use rayon::prelude::*;
-
-let numbers = vec![1, 2, 3, 4, 5];
-numbers.par_iter().for_each(|x| {
-    println!("x = {}", x);
-});
+numbers.par_iter().for_each(|x| println!("x = {}", x));
 ```
 
+Note:
+- Some intesting libraries made possible by cargo
+- like C++, most of the standard library is based on iterators.
+- more syntactically pleasing in rust
+- rust libraries can add new traits to old types!
+- Rayon adds `par_iter()` for multi-threaded "embarrasingly parallel" tasks
 
 
-### Macros in Rocket
+
+### Macros with Rocket
 
 A simple routing/web framework that can create REST API's.
 
 ```rust
-use rocket::*;
+extern crate rocket;
 
 #[get("/hello/<name>/<age>")]
 fn hello(name: String, age: u8) -> String {
@@ -252,9 +323,13 @@ fn main() {
 }
 ```
 
+Note:
+- looks like pythons decorators
+- best named factory functions ever
 
 
-### Macros in serde
+
+### Macros with serde
 
 ```rust
 extern crate serde;
@@ -283,6 +358,10 @@ fn main() {
     println!("deserialized = {:?}", deserialized);
 }
 ```
+
+Note:
+- very simple way to serialize and deserialize structs
+- can be used to support multiple file formats
 
 
 
@@ -318,6 +397,7 @@ Do you...
 - While there are a ton of libraries out there, they are in varying degrees of completion
 
 
+
 ### Pros
 
 - There are a ton of libraries out there, waiting to be completed by adventuring programmers!
@@ -331,3 +411,4 @@ Do you...
 ---
 
 # Questions
+
